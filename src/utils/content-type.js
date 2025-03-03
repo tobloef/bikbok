@@ -31,6 +31,7 @@ const contentTypeByExtension = {
   ".js": ContentType.JS,
   ".mjs": ContentType.JS,
   ".cjs": ContentType.JS,
+  ".ts": ContentType.JS,
   ".css": ContentType.CSS,
   ".json": ContentType.JSON,
   ".png": ContentType.PNG,

@@ -23,11 +23,11 @@
   },
   "dependencies": {
     "@tobloef/hot-reload": "^1.2.5",
-    "ws": "^8.17.1"
+    "ws": "^8.17.1",
+    "typescript": "^5.5.2"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
-    "@types/ws": "^8.5.10",
-    "typescript": "^5.5.2"
+    "@types/ws": "^8.5.10"
   }
 }

@@ -7,6 +7,7 @@ import { buildEvents } from "./events.js";
 import { debounce } from "./utils/debounce.js";
 import { lstat } from "node:fs/promises";
 import { getAbsolutePath } from "./utils/get-absolute-path.js";
+import BuildError from "./build-error.js";
 
 /** @import { BuildConfig } from "./build-config.js"; */
 
@@ -20,7 +21,16 @@ export async function runPipelineOnce(buildConfig) {
   const startTime = performance.now();
 
   for (const module of buildConfig.modules) {
-    await module.onBuild({ buildConfig });
+    try {
+      await module.onBuild({ buildConfig });
+    } catch (error) {
+      if (error instanceof BuildError) {
+        log(LogLevel.ERROR, error.message);
+        process.exit(1);
+      } else {
+        throw error;
+      }
+    }
   }
 
   const endTime = performance.now();
@@ -37,7 +47,16 @@ export async function runPipelineContinuously(buildConfig) {
   log(LogLevel.INFO, "👀 Watching files for changes...");
 
   for (const module of buildConfig.modules) {
-    await module.onWatch({ buildConfig });
+    try {
+      await module.onWatch({ buildConfig });
+    } catch (error) {
+      if (error instanceof BuildError) {
+        log(LogLevel.ERROR, error.message);
+        process.exit(1);
+      } else {
+        throw error;
+      }
+    }
   }
 
   watchFiles(buildConfig);
