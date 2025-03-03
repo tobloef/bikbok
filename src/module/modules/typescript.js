@@ -87,7 +87,11 @@ export class TypeScript extends Module {
       .map((file) => join(file.parentPath, file.name))
       .filter((file) => file.endsWith(".ts"));
 
-    log(LogLevel.VERBOSE, `Files to compile:\n  ${fileNames.join("\n  ")}`);
+    if (fileNames.length > 0) {
+      log(LogLevel.VERBOSE, `Files to compile:\n  ${fileNames.join("\n  ")}`);
+    } else {
+      log(LogLevel.VERBOSE, "No TypeScript files to compile.");
+    }
 
     this.#compile(fileNames, this.compilerOptions);
   }
@@ -99,7 +103,7 @@ export class TypeScript extends Module {
   #compile(fileNames, options) {
     const program = ts.createProgram(fileNames, {
       ...options,
-      noEmitOnError: true,
+      //noEmitOnError: true,
       outDir: this.options.to,
     });
 
@@ -109,11 +113,17 @@ export class TypeScript extends Module {
     const postEmitDiagnostics = emitResult.diagnostics;
 
     if (preEmitDiagnostics.length > 0) {
-      throw new BuildError(this.#diagnosticsToErrorMessage(preEmitDiagnostics));
-    }
-
-    if (postEmitDiagnostics.length > 0) {
-      throw new BuildError(this.#diagnosticsToErrorMessage(postEmitDiagnostics));
+      if (options?.noEmitOnError) {
+        throw new BuildError(this.#diagnosticsToErrorMessage(preEmitDiagnostics));
+      } else {
+        log(LogLevel.ERROR, this.#diagnosticsToErrorMessage(preEmitDiagnostics));
+      }
+    } if (postEmitDiagnostics.length > 0) {
+      if (options?.noEmitOnError) {
+        throw new BuildError(this.#diagnosticsToErrorMessage(postEmitDiagnostics));
+      } else {
+        log(LogLevel.ERROR, this.#diagnosticsToErrorMessage(postEmitDiagnostics));
+      }
     }
   }
 
@@ -121,7 +131,7 @@ export class TypeScript extends Module {
    * @param {ts.Diagnostic[] | readonly ts.Diagnostic[]} diagnostics
    */
   #diagnosticsToErrorMessage(diagnostics) {
-    let message = "TypeScript compilation failed.";
+    let message = "TypeScript during compilation compilation.";
     const errors = diagnostics.map(this.#diagnosticToString);
 
     if (errors.length > 0) {
