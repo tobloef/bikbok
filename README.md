@@ -1,4 +1,4 @@
-![Build Tool Banner](https://github.com/tobloef/build-tool/assets/12204005/641c2ea4-991a-47b6-a4cd-1958813f9c9b)
+![Bikbok](https://github.com/user-attachments/assets/b8742dea-a018-4d27-9454-95ff64661a4b)
 
 ### Modular build system for web projects 📦
 
@@ -14,8 +14,8 @@
 
 ## Features
 
-* Configuration-driven pipelines ([see example pipelines](https://github.com/tobloef/build-tool/tree/main/src/preset/presets)).
-* Extensible module system ([list of built-in modules](https://github.com/tobloef/build-tool/tree/main/src/module/modules)).
+* Configuration-driven pipelines ([see example pipelines](https://github.com/tobloef/bikbok/tree/main/src/preset/presets)).
+* Extensible module system ([list of built-in modules](https://github.com/tobloef/bikbok/tree/main/src/module/modules)).
 * Build once or continuously watch for changes.
 * Dev server for serving built files over HTTP and communicating build-events over WebSockets.
 * Hot reloading of JavaScript modules and other assets ([more details](https://github.com/tobloef/hot-reload)).
@@ -24,13 +24,13 @@
 ## Installation
 
 ```shell
-npm install --save @tobloef/build-tool
+npm install --save "git+https://git@github.com/tobloef/bikbok.git#v1.4.10"
 ```
 
 ## Usage
 
 ```shell
-build-tool [build-config] [--watch] [--serve] [--open] [--verbose] [--quiet]
+bikbok [build-config] [--watch] [--serve] [--open] [--verbose] [--quiet]
 ```
 
 If a build config is not specified, the build tool will attempt to read `build-config.js` from the working directory. If this file doesn't exist, a build config _must_ be specified as a CLI option. You can either specify a path to a build config JavaScript file or use one of the [presets](https://github.com/tobloef/build-tool/blob/main/src/presets/index.js) (e.g. `build-tool presets/github-pages`).
