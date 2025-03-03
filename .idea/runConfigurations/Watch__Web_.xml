@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Watch (Web)" type="NodeJSConfigurationType" application-parameters="web --verbose --watch --serve --live" node-parameters="." working-dir="$PROJECT_DIR$">
-    <method v="2" />
-  </configuration>
-</component>

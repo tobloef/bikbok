@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build (Web)" type="NodeJSConfigurationType" application-parameters="web --verbose" node-parameters="." working-dir="$PROJECT_DIR$">
-    <method v="2" />
-  </configuration>
-</component>
