@@ -1,5 +1,5 @@
 {
-  "name": "@tobloef/build-tool",
+  "name": "@tobloef/bikbok",
   "description": "Personal build tool for web projects",
   "version": "1.4.10",
   "author": {
@@ -9,12 +9,12 @@
   },
   "license": "MIT",
   "repository": {
-    "url": "https://gjthub.com/tobloef/build-tool"
+    "url": "https://gjthub.com/tobloef/bikbok"
   },
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "bin": {
-    "build-tool": "src/cli.js"
+    "bikbok": "src/cli.js"
   },
   "type": "module",
   "scripts": {

@@ -33,7 +33,7 @@ npm install --save "git+https://git@github.com/tobloef/bikbok.git#v1.4.10"
 bikbok [build-config] [--watch] [--serve] [--open] [--verbose] [--quiet]
 ```
 
-If a build config is not specified, the build tool will attempt to read `build-config.js` from the working directory. If this file doesn't exist, a build config _must_ be specified as a CLI option. You can either specify a path to a build config JavaScript file or use one of the [presets](https://github.com/tobloef/build-tool/blob/main/src/presets/index.js) (e.g. `build-tool presets/github-pages`).
+If a build config is not specified, bikbok will attempt to read `build-config.js` from the working directory. If this file doesn't exist, a build config _must_ be specified as a CLI option. You can either specify a path to a build config JavaScript file or use one of the [presets](https://github.com/tobloef/bikbok/blob/main/src/presets/index.js) (e.g. `bikbok presets/github-pages`).
 
 The available flags are:
 * `--watch` Continuously watch for changes and automatically rebuild.
