@@ -51,29 +51,59 @@ export class TypeScript extends Module {
    * @param {BuildConfig} params.buildConfig
    */
   async onWatch(params) {
-    buildEvents.fileChanged.subscribe(async (event) => {
-      const startsWithFrom = event.data.relative.startsWith(this.options.from);
+    this.#watchCompilation();
+  }
 
-      const fromIsWorkingDirectory = this.options.from === "." || this.options.from === "./";
-      const isInFromFolder = fromIsWorkingDirectory || startsWithFrom;
-      const isInToFolder = event.data.relative.startsWith(this.options.to);
+  #watchCompilation() {
+    const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
-      if (!isInFromFolder || (isInToFolder && this.options.from !== this.options.to)) {
-        return;
-      }
+    const configPath = ts.findConfigFile(
+      "./",
+      ts.sys.fileExists,
+      this.options.tsConfigPath,
+    );
 
-      log(LogLevel.VERBOSE, `Recompiling TypeScript files due to change in "${event.data.relative}"`);
+    if (configPath === undefined) {
+      throw new BuildError("No tsconfig.json found.");
+    }
 
-      try {
-        await this.#compileAll();
-      } catch (error) {
-        if (error instanceof BuildError) {
-          log(LogLevel.ERROR, error.message);
-        } else {
-          throw error;
-        }
-      }
-    });
+    /** @param {ts.Diagnostic} diagnostic */
+    const reportDiagnostic = (diagnostic) => {
+      this.#diagnosticsToErrorMessage([diagnostic]);
+    };
+
+    /** @param {ts.Diagnostic} diagnostic */
+    const reportWatchStatusChanged = (diagnostic) => {
+      log(LogLevel.VERBOSE, ts.formatDiagnostic(diagnostic, {
+        getCanonicalFileName: path => path,
+        getCurrentDirectory: ts.sys.getCurrentDirectory,
+        getNewLine: () => ts.sys.newLine
+      }));
+    }
+
+    const host = ts.createWatchCompilerHost(
+      configPath,
+      {},
+      ts.sys,
+      createProgram,
+      reportDiagnostic,
+      reportWatchStatusChanged,
+    );
+
+    const originalCreateProgram = host.createProgram;
+    const originalAfterProgramCreate = host.afterProgramCreate;
+
+    host.createProgram = (rootNames, options, host, oldProgram) => {
+      log(LogLevel.VERBOSE, "Creating TypeScript program...");
+      return originalCreateProgram?.(rootNames, options, host, oldProgram);
+    }
+
+    host.afterProgramCreate = (program) => {
+      log(LogLevel.VERBOSE, "TypeScript program created.");
+      return originalAfterProgramCreate?.(program);
+    }
+
+    ts.createWatchProgram(host);
   }
 
   async #compileAll() {
