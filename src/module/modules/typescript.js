@@ -7,7 +7,6 @@ import * as ts from "typescript";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import BuildError from "../../build-error.js";
-import { buildEvents } from "../../events.js";
 
 /** @import { BuildConfig } from "../../build-config.js"; */
 
@@ -69,39 +68,26 @@ export class TypeScript extends Module {
 
     /** @param {ts.Diagnostic} diagnostic */
     const reportDiagnostic = (diagnostic) => {
-      this.#diagnosticsToErrorMessage([diagnostic]);
+      if (diagnostic.category !== ts.DiagnosticCategory.Error) {
+        return;
+      }
+
+      log(LogLevel.ERROR, this.#diagnosticsToErrorMessage([diagnostic]));
     };
 
     /** @param {ts.Diagnostic} diagnostic */
-    const reportWatchStatusChanged = (diagnostic) => {
-      log(LogLevel.VERBOSE, ts.formatDiagnostic(diagnostic, {
-        getCanonicalFileName: path => path,
-        getCurrentDirectory: ts.sys.getCurrentDirectory,
-        getNewLine: () => ts.sys.newLine
-      }));
-    }
+    const reportWatchStatusChanged = (diagnostic) => {};
 
     const host = ts.createWatchCompilerHost(
       configPath,
-      {},
+      {
+        outDir: this.options.to,
+      },
       ts.sys,
       createProgram,
       reportDiagnostic,
       reportWatchStatusChanged,
     );
-
-    const originalCreateProgram = host.createProgram;
-    const originalAfterProgramCreate = host.afterProgramCreate;
-
-    host.createProgram = (rootNames, options, host, oldProgram) => {
-      log(LogLevel.VERBOSE, "Creating TypeScript program...");
-      return originalCreateProgram?.(rootNames, options, host, oldProgram);
-    }
-
-    host.afterProgramCreate = (program) => {
-      log(LogLevel.VERBOSE, "TypeScript program created.");
-      return originalAfterProgramCreate?.(program);
-    }
 
     ts.createWatchProgram(host);
   }
