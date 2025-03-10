@@ -101,7 +101,7 @@ export class TypeScript extends Module {
     const fileNames = files
       .filter((file) => !file.isDirectory())
       .map((file) => join(file.parentPath, file.name))
-      .filter((file) => file.endsWith(".ts"));
+      .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"));
 
     if (fileNames.length > 0) {
       log(LogLevel.VERBOSE, `Files to compile:\n  ${fileNames.join("\n  ")}`);
