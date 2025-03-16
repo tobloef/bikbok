@@ -24,7 +24,7 @@
 ## Installation
 
 ```shell
-npm install --save "git+https://git@github.com/tobloef/bikbok.git#v1.4.10"
+npm install --save "git+https://git@github.com/tobloef/bikbok.git#v1.7.0"
 ```
 
 ## Usage

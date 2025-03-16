@@ -7,7 +7,6 @@ import * as ts from "typescript";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import BuildError from "../../build-error.js";
-import { buildEvents } from "../../events.js";
 
 /** @import { BuildConfig } from "../../build-config.js"; */
 
@@ -51,29 +50,46 @@ export class TypeScript extends Module {
    * @param {BuildConfig} params.buildConfig
    */
   async onWatch(params) {
-    buildEvents.fileChanged.subscribe(async (event) => {
-      const startsWithFrom = event.data.relative.startsWith(this.options.from);
+    this.#watchCompilation();
+  }
 
-      const fromIsWorkingDirectory = this.options.from === "." || this.options.from === "./";
-      const isInFromFolder = fromIsWorkingDirectory || startsWithFrom;
-      const isInToFolder = event.data.relative.startsWith(this.options.to);
+  #watchCompilation() {
+    const createProgram = ts.createEmitAndSemanticDiagnosticsBuilderProgram;
 
-      if (!isInFromFolder || (isInToFolder && this.options.from !== this.options.to)) {
+    const configPath = ts.findConfigFile(
+      "./",
+      ts.sys.fileExists,
+      this.options.tsConfigPath,
+    );
+
+    if (configPath === undefined) {
+      throw new BuildError("No tsconfig.json found.");
+    }
+
+    /** @param {ts.Diagnostic} diagnostic */
+    const reportDiagnostic = (diagnostic) => {
+      if (diagnostic.category !== ts.DiagnosticCategory.Error) {
         return;
       }
 
-      log(LogLevel.VERBOSE, `Recompiling TypeScript files due to change in "${event.data.relative}"`);
+      log(LogLevel.ERROR, this.#diagnosticsToErrorMessage([diagnostic]));
+    };
 
-      try {
-        await this.#compileAll();
-      } catch (error) {
-        if (error instanceof BuildError) {
-          log(LogLevel.ERROR, error.message);
-        } else {
-          throw error;
-        }
-      }
-    });
+    /** @param {ts.Diagnostic} diagnostic */
+    const reportWatchStatusChanged = (diagnostic) => {};
+
+    const host = ts.createWatchCompilerHost(
+      configPath,
+      {
+        outDir: this.options.to,
+      },
+      ts.sys,
+      createProgram,
+      reportDiagnostic,
+      reportWatchStatusChanged,
+    );
+
+    ts.createWatchProgram(host);
   }
 
   async #compileAll() {
@@ -85,7 +101,7 @@ export class TypeScript extends Module {
     const fileNames = files
       .filter((file) => !file.isDirectory())
       .map((file) => join(file.parentPath, file.name))
-      .filter((file) => file.endsWith(".ts"));
+      .filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts"));
 
     if (fileNames.length > 0) {
       log(LogLevel.VERBOSE, `Files to compile:\n  ${fileNames.join("\n  ")}`);

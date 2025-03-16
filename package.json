@@ -1,7 +1,7 @@
 {
   "name": "@tobloef/bikbok",
   "description": "Personal build tool for web projects",
-  "version": "1.6.3",
+  "version": "1.7.3",
   "author": {
     "name": "Tobias Løfgren",
     "email": "tobloef@gmail.com",
