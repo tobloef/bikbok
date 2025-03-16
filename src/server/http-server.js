@@ -43,12 +43,6 @@ function createRequestHandler(buildConfig) {
       await module.onHttpRequest({ req, res, buildConfig });
     }
 
-    let logMessage = `${req.method} "${req.url}"`;
-    if (originalUrl !== req.url) {
-      logMessage += ` (original: "${originalUrl}")`;
-    }
-    log(LogLevel.VERBOSE, logMessage);
-
     /** @type {ResponseData | null} */
     let data = null;
 
@@ -59,14 +53,19 @@ function createRequestHandler(buildConfig) {
     if (!data) {
       res.statusCode = 404;
       res.end("Not found");
-      return;
+    } else {
+      res.statusCode = 200;
+      res.setHeader("Content-Type", data.type);
+      res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+      res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+      res.end(data.content);
     }
 
-    res.statusCode = 200;
-    res.setHeader("Content-Type", data.type);
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    res.end(data.content);
+    let logMessage = `${req.method} ${res.statusCode} "${req.url}"`;
+    if (originalUrl !== req.url) {
+      logMessage += ` (original: "${originalUrl}")`;
+    }
+    log(LogLevel.VERBOSE, logMessage);
   };
 }
 
