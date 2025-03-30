@@ -1,7 +1,7 @@
 {
   "name": "@tobloef/bikbok",
   "description": "Personal build tool for web projects",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "author": {
     "name": "Tobias Løfgren",
     "email": "tobloef@gmail.com",
@@ -22,7 +22,7 @@
     "generate-types": "tsc --emitDeclarationOnly --project tsconfig.types.json"
   },
   "dependencies": {
-    "@tobloef/hot-reload": "^1.2.5",
+    "@tobloef/hot-reload": "git+ssh://git@github.com/tobloef/hot-reload.git#v1.2.6",
     "ws": "^8.17.1",
     "typescript": "^5.5.2"
   },
