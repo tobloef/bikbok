@@ -5,7 +5,7 @@ import {
 import { watch } from "fs";
 import { buildEvents } from "./events.js";
 import { debounce } from "./utils/debounce.js";
-import { lstat } from "node:fs/promises";
+import { stat } from "node:fs/promises";
 import { getAbsolutePath } from "./utils/get-absolute-path.js";
 import BuildError from "./build-error.js";
 
@@ -87,7 +87,7 @@ function watchFiles(buildConfig) {
 
     let isFolder = false;
     try {
-      isFolder = (await lstat(absolutePath)).isDirectory();
+      isFolder = (await stat(absolutePath)).isDirectory();
     } catch (error) {
       // This check wasn't that important, let's just move on
       log(LogLevel.WARNING, `Failed to check if "${absolutePath}" was a folder: ${error.message}`);
