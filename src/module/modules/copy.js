@@ -27,6 +27,8 @@ export class Copy extends Module {
   exclude;
   /** @type {boolean} */
   recursive;
+  /** @type {boolean | null} */
+  filesOnly;
 
   /** @type {((input: Buffer) => Buffer) | null} */
   middleware;
@@ -39,6 +41,7 @@ export class Copy extends Module {
    * @param {RegExp[]} [options.include]
    * @param {RegExp[]} [options.exclude]
    * @param {boolean} [options.recursive]
+   * @param {boolean} [options.filesOnly]
    * @param {(input: Buffer) => Buffer} [options.middleware]
    */
   constructor(options) {
@@ -49,6 +52,7 @@ export class Copy extends Module {
     this.exclude = options.exclude ?? null;
     this.recursive = options.recursive ?? true;
     this.middleware = options.middleware ?? null;
+    this.filesOnly = options.filesOnly ?? false;
   }
 
   /**
@@ -76,7 +80,7 @@ export class Copy extends Module {
     let somethingWasCopied = false;
 
     for (const file of files) {
-      if (file.isDirectory()) {
+      if (this.filesOnly && file.isDirectory()) {
         continue;
       }
 
