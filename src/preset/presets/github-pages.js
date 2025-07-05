@@ -2,7 +2,7 @@ import { BuildConfig } from "../../build-config.js";
 import {
   Copy,
   ImportMaps,
-  NpmInstall,
+  Execute,
 } from "../../module/index.js";
 import { Clean } from "../../module/modules/clean.js";
 
@@ -28,8 +28,9 @@ const githubPages = new BuildConfig({
         return Buffer.from(JSON.stringify(packageJson, null, 2));
       }
     }),
-    new NpmInstall({
+    new Execute({
       path: "docs",
+      command: "npm ci --omit=dev --install-links"
     }),
     new ImportMaps({
       write: true,

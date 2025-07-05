@@ -3,6 +3,7 @@
     "checkJs": true,
     "strict": true,
     "module": "nodenext",
+    "target": "ESNext",
     "types": [
       "node"
     ],
